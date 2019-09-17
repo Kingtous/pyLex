@@ -12,8 +12,8 @@ def graphDef(mdgraph):
     ]
     mdgraph.add_nodes_from(node_list)
     tools.addEdgesToGraph(mdgraph,edge_list)
-    mdgraph.node['i']['color']='red'
-    mdgraph.node['f']['color']='green'
+    mdgraph.node['i']['color']=constDef.color_startNode
+    mdgraph.node['f']['color']=constDef.color_endNode
     pass
 
 

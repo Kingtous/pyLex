@@ -4,6 +4,10 @@
 # epsilon
 eps = 'eps'
 
+# color
+color_startNode = 'red'
+color_endNode = 'green'
+
 """
 结点属性为10000+
 """
@@ -14,10 +18,4 @@ import copy,queue
 
 Iqueue = queue.Queue()
 
-class IclosureStruct:
-    def __init__(self,id,selectedSet):
-        self.id = id
-        self.ss = selectedSet
-        self.ls = None
-        self.rs = None
         
