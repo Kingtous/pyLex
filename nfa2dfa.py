@@ -1,7 +1,7 @@
 "此程序将消除了左递归的三形文法从NFA转化为最小DFA"
 import networkx as nx
 import constDef,tip,dstruct
-import sys,queue
+import sys,queue,tools
 
 
 
@@ -37,17 +37,39 @@ def convert2NFA(g):
     for item in labels.items():
         label_set.add(item[1])
     label_list = list(label_set)
+    try:
+        label_list.remove(constDef.eps)
+    except ValueError:
+        pass
     # 2. 开始迭代
-    Istruct = dstruct.IclosureStruct(_startNode,set([_startNode]))
+    Istruct = dstruct.IclosureStruct(_startNode,tools.expandEpsilonForGraph(g,set([_startNode])).union({_startNode}))
     Iq = queue.Queue()
     Iq.put(Istruct)
-    while not Iq.empty:
+    recordList = []
+    resultIstructDict = dict()
+
+    while not Iq.empty():
         # 取出一个s
-
+        qs = Iq.get()
         # 按照label方向扩展，组成新的几个集合
-
+        for p in range(len(label_list)):
+            exp_set = tools.expandMoveForGraph(g,qs.ms,label_list[p])
+            exp_set = exp_set.union(tools.expandEpsilonForGraph(g,exp_set))
+            try:
+                if len(exp_set)!=0:
+                    i = recordList.index(exp_set)
+                    qs.sList.append(recordList[i])
+                    continue
+                continue
+            except ValueError:
+                newIstruct = dstruct.IclosureStruct(constDef.getAlignName(),exp_set)
+                # 不含有，继续命名
+                recordList.append(exp_set)
+                Iq.put(newIstruct)
+        resultIstructDict[qs.id]=qs
         # 将集合进行查重，重复的扔掉，没重复的保留，并命名为A,B,C...
-
+    
+        
         # 如果有endNode的话，则判断多少结点里面有endNode,将大结点标为endNode
 
         # 分析保留集合，连接边
@@ -58,7 +80,7 @@ def convert2NFA(g):
 
 
 if __name__ == "__main__":
-    g = nx.nx_pydot.read_dot('test.dot')
+    g = nx.nx_pydot.read_dot('lex/test.dot')
     cg = convert2NFA(g)
     pass
 
