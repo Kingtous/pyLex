@@ -46,6 +46,7 @@ def convert2NFA(g):
     Iq = queue.Queue()
     Iq.put(Istruct)
     recordList = []
+    recordDict = {} # set -> id
     resultIstructDict = dict()
 
     while not Iq.empty():
@@ -58,14 +59,17 @@ def convert2NFA(g):
             try:
                 if len(exp_set)!=0:
                     i = recordList.index(exp_set)
-                    qs.sList.append(recordList[i])
+                    qs.sDict[label_list[p]]=recordDict[tuple(exp_set)]
                     continue
                 continue
             except ValueError:
                 newIstruct = dstruct.IclosureStruct(constDef.getAlignName(),exp_set)
                 # 不含有，继续命名
                 recordList.append(exp_set)
+                recordDict[tuple(newIstruct.ms)]=newIstruct.id
                 Iq.put(newIstruct)
+                qs.sDict[label_list[p]]=newIstruct.id
+
         resultIstructDict[qs.id]=qs
         # 将集合进行查重，重复的扔掉，没重复的保留，并命名为A,B,C...
     

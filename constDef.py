@@ -10,12 +10,12 @@ color_endNode = 'green'
 ver_none = 'none'
 prop_label = 'label'
 # align name
-align_name = '1000'
+align_name = 'A'
 
 def getAlignName():
     global align_name
     r = align_name
-    align_name = str(int(align_name)+1)
+    align_name = chr(ord(align_name)+1)
     return r
 
 
