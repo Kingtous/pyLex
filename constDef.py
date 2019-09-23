@@ -1,5 +1,6 @@
 """
-特殊边
+Author: Kingtous
+Date : 2019/09/24
 """
 # epsilon
 eps = 'eps'
