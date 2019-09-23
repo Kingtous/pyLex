@@ -1,5 +1,6 @@
 import networkx as nx
 import constDef
+import copy
 
 def writeGraph2File(multidigraph,filePath):
     nx.nx_pydot.write_dot(multidigraph,filePath)
@@ -13,6 +14,9 @@ def convertGraphFile2PDF(filePath,pdfName):
 def addEdgesToGraph(multidigraph,lis):
     for tri_arr in lis:
         multidigraph.add_edge(tri_arr[0],tri_arr[2],label=tri_arr[1])
+
+###################
+## NFA -> DFA
 
 def expandMoveForGraph(multidigraph,oriSet,dir):
     """
@@ -191,3 +195,117 @@ def moveToDir_set(multidigraph,vSet,dir):
             except KeyError:
                 continue
     return tmp_s
+
+
+################################
+## reg2nfa
+## example : c(a|bc*)*(a)
+# 规定： | 只出现在括号内
+
+def claimChar():
+    return constDef.getNFANodeName()
+
+def parseStatement(multidigraph,statement,cLeftNode,cRightNode):
+    # 处理 当前Statement外围的
+    blocks = getBlocks(statement)
+    if len(blocks) != 1:
+        for block in blocks:
+            # 每个block中定义一个right node 
+            c = constDef.getNFANodeName()
+            
+            multidigraph.add_node(c)
+            parseStatement(multidigraph,block,cLeftNode,c)
+        return
+
+    # 函数处理核心代码 —— 此时应该有两种情况:1.只含有数字、字母以及* 2.有()或者()*包裹着的语句，
+    if statement[0] != '(':
+        # 第一种情况
+        i = 0
+        pNow = cLeftNode
+        while i < len(statement):
+            # 检测是否有 *
+            if i + 1 <len(statement) and statement[i+1] == '*':
+                # pNow -> claimChar(c)-> claimChar(d)
+                c = claimChar()
+                multidigraph.add_edge(pNow,c,key='eps',label='eps')
+                d = claimChar()
+                multidigraph.add_edge(c,d,key='eps',label='eps')
+                multidigraph.add_edge(c,c,key=statement[i],label=statement[i])
+                pNow = d
+                i = i + 2
+            else:
+                # pNow -> claimChar(c)
+                c = claimChar()
+                multidigraph.add_edge(pNow,c,key=statement[i],label=statement[i])
+                pNow = c
+                i = i + 1
+        multidigraph.add_edge(pNow,cRightNode,key='eps',label='eps')
+    else:
+        # 第二种情况，TODO 如果是有*则加结点，如果没有则去掉括号然后递归
+        if statement[-1] == '*':
+            # left -> c-> xxx ->d
+            c = claimChar()
+            d = claimChar()
+            multidigraph.add_edge(cLeftNode,c,key='eps',label='eps')
+            multidigraph.add_edge(d,cRightNode,key='eps',label='eps')
+            multidigraph.add_edge(c,d,key='eps',label='eps')
+            multidigraph.add_edge(d,c,key='eps',label='eps')
+            parseStatement(multidigraph,statement[1:-2],c,d)
+        else:
+            parseStatement(multidigraph,statement[1:-1],cLeftNode,cRightNode)
+
+def getBlocks(s):
+    # 获取并行的通路，并且细致分开单条路中的元素
+    block_list = []
+    block_buffer = []
+    i = 0
+    while i < len(s):
+        block,i = getBlock(s,i)
+        if block == '|':
+            # 如果发现是个裸着的|,则刷新block_buffer
+            block_list.append(copy.copy(block_buffer))
+            block_buffer.clear()
+            continue
+        block_buffer.append(block)
+    block_list.append(block_buffer)
+    return block_list
+
+# 'c(a|bc*)*(a)' -> c,(a|bc*)*,(a)
+def getBlock(s,startPos):
+    # 用于提取括号内的所有内容，startPos必须是(
+    try:
+        if s[startPos]!='(':
+            # 普通字符，则判断后面一个字符是否是*
+            if startPos + 1<len(s) and s[startPos + 1] == '*':
+                return s[startPos:startPos+2],startPos+2
+            else:
+                return s[startPos],startPos+1
+        p = startPos + 1
+        estack = 1
+        while estack > 0:
+            if s[p] == '(':
+                estack = estack + 1
+            elif s[p] == ')':
+                estack = estack - 1
+            p = p + 1
+        # p 会指向)的下一位
+        # 查看后面是否有*
+        if p<len(s) and s[p]=='*':
+            return s[startPos:p+1],p+1
+        else:
+            return s[startPos:p],p
+            
+    except IndexError as e:
+        import sys
+        sys.stderr.write('REG Error:'+e)
+        exit(-1)
+
+
+def toNFA():
+    # 当前指针在字符串的第cpos位
+    cpos = 0
+
+
+
+    pass
+

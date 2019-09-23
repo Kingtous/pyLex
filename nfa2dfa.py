@@ -58,7 +58,7 @@ def convert2NFA(g):
             exp_set = exp_set.union(tools.expandEpsilonForGraph(g,exp_set))
             try:
                 if len(exp_set)!=0:
-                    i = recordList.index(exp_set)
+                    recordList.index(exp_set)
                     # 增加对应的ID
                     qs.sDict[label_list[p]]=recordDict[tuple(exp_set)]
                     continue
