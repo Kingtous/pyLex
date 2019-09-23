@@ -1,3 +1,7 @@
+"""
+Author: Kingtous
+Date : 2019/09/24
+"""
 import networkx as nx
 import tools
 

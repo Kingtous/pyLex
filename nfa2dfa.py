@@ -1,4 +1,8 @@
-"此程序将消除了左递归的三形文法从NFA转化为最小DFA"
+"""
+Author: Kingtous
+Date : 2019/09/24
+"""
+# 此程序将消除了左递归的三形文法从NFA转化为最小DFA
 import networkx as nx
 import constDef,tip,dstruct
 import sys,queue,tools

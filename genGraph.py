@@ -1,6 +1,8 @@
 """
-临时构造一个可用的DFA, eps 表示 epsilon, color = red为起始结点, color = green 为终止结点
+Author: Kingtous
+Date : 2019/09/24
 """
+# 临时构造一个可用的DFA, eps 表示 epsilon, color = red为起始结点, color = green 为终止结点
 import networkx as nx
 import tools,constDef
 
