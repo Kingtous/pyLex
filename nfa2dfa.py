@@ -3,17 +3,9 @@ import networkx as nx
 import constDef,tip,dstruct
 import sys,queue,tools
 
-def simplfyDFA(dfa):
-    """
-    化简一个DFA为最简DFA，直接修改传参
-    """
-
-    pass
-
 def convert2NFA(g):
     _startNode = None
     _endNode = None
-    _char = 'A'
 
     # 1. 找到起始和终止点，对应red和green
     for node in g.nodes:
@@ -22,6 +14,8 @@ def convert2NFA(g):
                 _startNode = node
             elif g.node[node]['color']==constDef.color_endNode:
                 _endNode = node
+            else:
+                continue
         except KeyError:
             # 没有Color标签的证明是普通结点
             continue
@@ -106,9 +100,8 @@ def convert2NFA(g):
 def genSimplifiedDFA(nfaDotPath):
     return convert2NFA(nx.nx_pydot.read_dot(nfaDotPath))
 
-
 if __name__ == "__main__":
-    g = nx.nx_pydot.read_dot('lex/test_2.dot')
+    g = nx.nx_pydot.read_dot('lex/nfa.dot')
     cg = convert2NFA(g)
     # 生成dot并且生成pdf
     nx.nx_pydot.write_dot(cg,'lex/result.dot')

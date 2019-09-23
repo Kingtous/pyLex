@@ -212,47 +212,52 @@ def parseStatement(multidigraph,statement,cLeftNode,cRightNode):
         for block in blocks:
             # 每个block中定义一个right node 
             c = constDef.getNFANodeName()
-            
             multidigraph.add_node(c)
             parseStatement(multidigraph,block,cLeftNode,c)
+            multidigraph.add_edge(c,cRightNode,key='eps',label='eps')
         return
-
+    # blocks = 1
+    statement = blocks[0]
+    pNow = cLeftNode
+    
+    for minStatement in statement:
     # 函数处理核心代码 —— 此时应该有两种情况:1.只含有数字、字母以及* 2.有()或者()*包裹着的语句，
-    if statement[0] != '(':
-        # 第一种情况
-        i = 0
-        pNow = cLeftNode
-        while i < len(statement):
-            # 检测是否有 *
-            if i + 1 <len(statement) and statement[i+1] == '*':
-                # pNow -> claimChar(c)-> claimChar(d)
-                c = claimChar()
-                multidigraph.add_edge(pNow,c,key='eps',label='eps')
-                d = claimChar()
-                multidigraph.add_edge(c,d,key='eps',label='eps')
-                multidigraph.add_edge(c,c,key=statement[i],label=statement[i])
-                pNow = d
-                i = i + 2
-            else:
-                # pNow -> claimChar(c)
-                c = claimChar()
-                multidigraph.add_edge(pNow,c,key=statement[i],label=statement[i])
-                pNow = c
-                i = i + 1
-        multidigraph.add_edge(pNow,cRightNode,key='eps',label='eps')
-    else:
-        # 第二种情况，TODO 如果是有*则加结点，如果没有则去掉括号然后递归
-        if statement[-1] == '*':
-            # left -> c-> xxx ->d
-            c = claimChar()
-            d = claimChar()
-            multidigraph.add_edge(cLeftNode,c,key='eps',label='eps')
-            multidigraph.add_edge(d,cRightNode,key='eps',label='eps')
-            multidigraph.add_edge(c,d,key='eps',label='eps')
-            multidigraph.add_edge(d,c,key='eps',label='eps')
-            parseStatement(multidigraph,statement[1:-2],c,d)
+        if minStatement[0] != '(':
+            # 第一种情况
+            i = 0
+            while i < len(minStatement):
+                # 检测是否有 *
+                if i + 1 <len(minStatement) and minStatement[i+1] == '*':
+                    # pNow -> claimChar(c)-> claimChar(d)
+                    c = claimChar()
+                    multidigraph.add_edge(pNow,c,key='eps',label='eps')
+                    d = claimChar()
+                    multidigraph.add_edge(c,d,key='eps',label='eps')
+                    multidigraph.add_edge(c,c,key=minStatement[i],label=minStatement[i])
+                    pNow = d
+                    i = i + 2
+                else:
+                    # pNow -> claimChar(c)
+                    c = claimChar()
+                    multidigraph.add_edge(pNow,c,key=minStatement[i],label=minStatement[i])
+                    pNow = c
+                    i = i + 1
         else:
-            parseStatement(multidigraph,statement[1:-1],cLeftNode,cRightNode)
+            # 第二种情况，TODO 如果是有*则加结点，如果没有则去掉括号然后递归
+            if minStatement[-1] == '*':
+                # pNow -> c-> xxx ->d -> pNow(new)
+                c = claimChar()
+                d = claimChar()
+                multidigraph.add_edge(pNow,c,key='eps',label='eps')
+                pNow = claimChar()
+                multidigraph.add_edge(d,pNow,key='eps',label='eps')
+                multidigraph.add_edge(c,d,key='eps',label='eps')
+                multidigraph.add_edge(d,c,key='eps',label='eps')
+                parseStatement(multidigraph,minStatement[1:-2],c,d)
+            else:
+                # pNow ->c
+                parseStatement(multidigraph,minStatement[1:-1],pNow,cRightNode)
+    multidigraph.add_edge(pNow,cRightNode,key='eps',label='eps')
 
 def getBlocks(s):
     # 获取并行的通路，并且细致分开单条路中的元素

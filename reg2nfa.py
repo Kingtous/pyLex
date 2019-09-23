@@ -5,9 +5,8 @@ import tools
 ch_set = {}
 
 test_str = 'c(a|bc*)*(a)'
-
-simple_str = 'a*b|b*a|(a|b)*a*'
-
+back_str = 'a*b|b*a|(a|b)*a*'
+simple_str = '1(1010*|1(010)*1)*0'
 
 def genNFA():
     # 建立多向图
