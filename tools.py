@@ -104,7 +104,43 @@ def simplifyDFA(multidigraph,setList,dirList):
         first_v = s[0]
         # 将其他元素的入点指向first_v,出点从first_v指出
         for i in range(1,len(s)):
-            # TODO
+            # 前驱,后继
+            # pre_edges = multidigraph.adj[s[i]]
+            # for pe in pre_edges.values():
+            #     pass
+            # pass
+            pres = multidigraph.predecessors(s[i])
+            for pre in list(pres):
+                for key in dirList:
+                    # TODO 还要检查标签，别忘了
+                    if multidigraph.has_edge(pre,s[i],key=key) and not multidigraph.has_edge(pre,first_v,key=key):
+                        # 加上 pre -> first_v
+                        # 删除 pre -> s[i]
+                        if pre == s[i]:
+                            # 自我循环,加入到first_v -> first_v
+                            multidigraph.add_edge(first_v,first_v,key=key,label=key)
+                            pass
+                        else:
+                            multidigraph.add_edge(pre,first_v,key=key,label=key)
+                        # TODO 要remove 不同label的而不能全部清空
+                        multidigraph.remove_edge(pre,s[i],key=key)
+                        pass
+            succs = multidigraph.successors(s[i])
+            for succ in list(succs):
+                for key in dirList:
+                    # TODO 还要检查标签，别忘了
+                    if multidigraph.has_edge(succ,s[i],key=key) and not multidigraph.has_edge(first_v,succ,key=key):
+                        # 加上 first_v -> succ
+                        # 删除 s[i] -> succ
+                        if pre == s[i]:
+                            # 在 pre 中就处理过了，跳过
+                            continue
+                        else:
+                            multidigraph.add_edge(first_v,succ,key=key,label=key)
+                        # TODO 要remove 相同label的而不能全部清空
+                        multidigraph.remove_edge(s[i],succ,key=key)
+                        pass
+            multidigraph.remove_node(s[i])
             pass
 
     pass
@@ -134,9 +170,13 @@ def moveToDir(multidigraph,vertex,dir):
     neis = nx.neighbors(multidigraph,vertex)
     for nei in neis:
         # 判断是不是这个方向的
-        label = multidigraph.edges[vertex,nei,0]['label']
-        if label == dir:
+        try:
+            multidigraph.edges[vertex,nei,dir]['label']
             tmp_v = nei
+            break
+        except KeyError:
+            # 没有dir
+            continue
     return tmp_v
 
 def moveToDir_set(multidigraph,vSet,dir):
@@ -145,7 +185,9 @@ def moveToDir_set(multidigraph,vSet,dir):
         neis = nx.neighbors(multidigraph,vertex)
         for nei in neis:
             # 判断是不是这个方向的
-            label = multidigraph.edges[vertex,nei,0]['label']
-            if label == dir:
+            try:
+                multidigraph.edges[vertex,nei,dir]['label']
                 tmp_s.add(nei)
+            except KeyError:
+                continue
     return tmp_s

@@ -3,8 +3,6 @@ import networkx as nx
 import constDef,tip,dstruct
 import sys,queue,tools
 
-
-
 def simplfyDFA(dfa):
     """
     化简一个DFA为最简DFA，直接修改传参
@@ -99,18 +97,21 @@ def convert2NFA(g):
     for rIi in resultIstructDict.items():
         rI = rIi[1]
         for label in rI.sDict.keys():
-            cg.add_edge(rI.id,rI.sDict[label],label=label)
+            cg.add_edge(rI.id,rI.sDict[label],label=label,key=label)
     # 化简确定的DFA
     tools.simplifyDFA(cg,setList,label_list)
-    # 4. 生成dot并且生成pdf
-    nx.nx_pydot.write_dot(cg,'lex/result.dot')
     return cg
 
 
+def genSimplifiedDFA(nfaDotPath):
+    return convert2NFA(nx.nx_pydot.read_dot(nfaDotPath))
+
 
 if __name__ == "__main__":
-    g = nx.nx_pydot.read_dot('lex/test_copy2.dot')
+    g = nx.nx_pydot.read_dot('lex/test_2.dot')
     cg = convert2NFA(g)
+    # 生成dot并且生成pdf
+    nx.nx_pydot.write_dot(cg,'lex/result.dot')
     pass
 
 

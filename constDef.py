@@ -31,9 +31,4 @@ def getAlignName():
 """
 START_NODE = 10000
 EXIT_NODE = 10001
-
-import copy,queue
-
-Iqueue = queue.Queue()
-
         
