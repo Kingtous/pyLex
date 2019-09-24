@@ -260,8 +260,15 @@ def parseStatement(multidigraph,statement,cLeftNode,cRightNode):
                 parseStatement(multidigraph,minStatement[1:-2],c,d)
             else:
                 # pNow ->c
-                parseStatement(multidigraph,minStatement[1:-1],pNow,cRightNode)
+                c = claimChar()
+                d = claimChar()
+                multidigraph.add_edge(pNow,c,key='eps',label='eps')
+                parseStatement(multidigraph,minStatement[1:-1],c,d)
+                pNow = d
+                
     multidigraph.add_edge(pNow,cRightNode,key='eps',label='eps')
+
+
 
 def getBlocks(s):
     # 获取并行的通路，并且细致分开单条路中的元素

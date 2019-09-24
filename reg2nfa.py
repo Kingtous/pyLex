@@ -10,7 +10,8 @@ ch_set = {}
 
 test_str = 'c(a|bc*)*(a)'
 back_str = 'a*b|b*a|(a|b)*a*'
-simple_str = '1(1010*|1(010)*1)*0'
+test_str_1 = '1(1010*|1(010)*1)*0'
+test_str_2 = '(a(a*b)(a|b))*a*(a|(b|a))b'
 
 def genNFA():
     # 建立多向图
@@ -21,10 +22,10 @@ def genNFA():
     g.add_node(_startNode,color='red')
     g.add_node(_endNode,color ='green')
     # 开始处理正则式
-    tools.parseStatement(g,simple_str,_startNode,_endNode)
+    tools.parseStatement(g,test_str_2,_startNode,_endNode)
     return g
 
 if __name__ == "__main__":
-    nx.nx_pydot.write_dot(genNFA(),'lex/nfa.dot')
+    nx.nx_pydot.write_dot(genNFA(),'nfa.dot')
    
     
