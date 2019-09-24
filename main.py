@@ -22,7 +22,7 @@ if __name__ == "__main__":
     tools.convertGraphFile2PDF('cg.dot','cg.pdf')
     tools.convertGraphFile2PDF('mg.dot','mg.pdf')
     print('Opening PDF File...')
-    os.system('qpdfview cg.pdf')
-    os.system('qpdfview mg.pdf')
+    # os.system('qpdfview cg.pdf')
+    # os.system('qpdfview mg.pdf')
 
 

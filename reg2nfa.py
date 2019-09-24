@@ -8,10 +8,10 @@ import tools
 # 特殊符号： |,(,),*
 ch_set = {}
 
-test_str = 'c(a|bc*)*(a)'
-back_str = 'a*b|b*a|(a|b)*a*'
 test_str_1 = '1(1010*|1(010)*1)*0'
 test_str_2 = '(a(a*b)(a|b))*a*(a|(b|a))b'
+test_str_3 = 'c(a|bc*)*(a)'
+test_str_4 = 'a*b|b*a|(a|b)*a*'
 
 def genNFA(s):
     # 建立多向图
@@ -26,6 +26,6 @@ def genNFA(s):
     return g
 
 if __name__ == "__main__":
-    nx.nx_pydot.write_dot(genNFA(test_str_2),'nfa.dot')
+    nx.nx_pydot.write_dot(genNFA(test_str_1),'nfa.dot')
    
     
