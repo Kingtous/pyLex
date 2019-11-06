@@ -1,3 +1,11 @@
+'''
+@Author: Kingtous
+@Date: 2019-11-01 18:40:29
+@LastEditors: Kingtous
+@LastEditTime: 2019-11-01 19:29:56
+@Description: Kingtous' Code
+
+'''
 """
 Author: Kingtous
 Date : 2019/09/24
@@ -317,11 +325,15 @@ def getBlock(s,startPos):
         exit(-1)
 
 
-def toNFA():
-    # 当前指针在字符串的第cpos位
-    cpos = 0
+def findSpeNodeInGraph(graph,typecolor):
+    for node in graph.nodes:
+        if graph.node[node]['color']==typecolor:
+            return node
 
-
-
-    pass
+def findAllSpeNodeInGraph(graph,typecolor):
+    nodes = []
+    for node in graph.nodes:
+        if graph.node[node]['color']==typecolor:
+            nodes.append(node)
+    return nodes
 
